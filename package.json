@@ -1,0 +1,39 @@
+{
+  "name": "quizserver",
+  "homepage": "https://richardstuart007.github.io/quizserver010",
+  "version": "1.10.0",
+  "description": "Quiz Server",
+  "main": "script.js",
+  "scripts": {
+    "start": "node quizServerRemote.js",
+    "startlocalremote": "node quizServerLocalRemote.js",
+    "startlocal": "node quizServerLocal.js",
+    "devstart": "nodemon quizServerLocal.js"
+  },
+  "author": "Richard",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.3.0",
+    "eslint-plugin-react": "^7.27.1",
+    "nodemon": "^2.0.12"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "date-fns": "^2.28.0",
+    "express": "^4.17.1",
+    "knex": "^0.95.11",
+    "node-fetch": "^3.0.0",
+    "pg": "^8.7.1"
+  },
+  "engines": {
+    "node": "16.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richardstuart007/quizserver010.git"
+  },
+  "bugs": {
+    "url": "https://github.com/richardstuart007/quizserver010/issues"
+  }
+}
