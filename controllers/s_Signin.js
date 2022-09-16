@@ -4,16 +4,16 @@ const handleSignin = (req, res, db, bcrypt) => {
     return res.status(400).json('Email or Password empty')
   }
 
-  db.select('email', 'hash')
-    .from('login')
-    .where('email', '=', email)
+  db.select('upemail', 'uphash')
+    .from('userspwd')
+    .where('upemail', '=', email)
     .then(data => {
-      const isValid = bcrypt.compareSync(password, data[0].hash)
+      const isValid = bcrypt.compareSync(password, data[0].uphash)
       if (isValid) {
         return db
           .select('*')
           .from('users')
-          .where('email', '=', email)
+          .where('u_email', '=', email)
           .then(user => {
             res.json(user[0])
           })
