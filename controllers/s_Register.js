@@ -24,12 +24,13 @@ const handleRegister = (req, res, db, bcrypt) => {
       })
       .into('userspwd')
       .returning('upemail')
-      .then(userspwdEmail => {
+      .then(email => {
         return trx('users')
           .returning('*')
           .insert({
             u_name: name,
             u_email: email,
+            u_admin: false,
             u_fedid: fedid,
             u_joined: new Date()
           })
