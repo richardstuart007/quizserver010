@@ -24,7 +24,7 @@ const handleRegister = (req, res, db, bcrypt) => {
       })
       .into('userspwd')
       .returning('upemail')
-      .then(email => {
+      .then(() => {
         return trx('users')
           .returning('*')
           .insert({
