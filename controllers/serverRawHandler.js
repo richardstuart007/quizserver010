@@ -5,12 +5,12 @@
 // Constants
 //
 const log = false
-const reference = 's_Raw_handler'
+const reference = 'serverRawHandler'
 //
 //  Global Variable - Define return object
 //
-const CatchFunction = 's_Raw_handler'
-const SqlFunction = 's_Raw_handler'
+const CatchFunction = 'serverRawHandler'
+const SqlFunction = 'serverRawHandler'
 var returnObject = {
   returnValue: '',
   returnMessage: '',
@@ -23,7 +23,7 @@ var returnObject = {
 //==================================================================================
 //= Main ASYNC Function
 //==================================================================================
-async function f_handleRaw(db, bodyParms) {
+async function serverRawHandler(db, bodyParms) {
   try {
     //
     // Initialise Global Variables
@@ -41,17 +41,9 @@ async function f_handleRaw(db, bodyParms) {
     //
     //  Destructure Parameters
     //
-    const {
-      sqlAction,
-      sqlString,
-      sqlTable,
-      sqlWhere,
-      sqlOrderByRaw,
-      sqlRow,
-      sqlKeyName
-    } = bodyParms
-    if (log)
-      console.log(`${reference} - sqlAction ${sqlAction} sqlRow ${sqlRow} `)
+    const { sqlAction, sqlString, sqlTable, sqlWhere, sqlOrderByRaw, sqlRow, sqlKeyName } =
+      bodyParms
+    if (log) console.log(`${reference} - sqlAction ${sqlAction} sqlRow ${sqlRow} `)
     //
     // Check values sent
     //
@@ -95,7 +87,7 @@ async function f_handleRaw(db, bodyParms) {
     //
     // Get Database record (ASYNC)
     //
-    const responseSql = await f_handleRawAwait(
+    const responseSql = await serverRawserverRawait(
       db,
       sqlAction,
       sqlString,
@@ -136,7 +128,7 @@ async function f_handleRaw(db, bodyParms) {
 //!==================================================================================
 //! Main function - Await
 //!==================================================================================
-async function f_handleRawAwait(
+async function serverRawserverRawait(
   db,
   sqlAction,
   sqlString,
@@ -169,18 +161,10 @@ async function f_handleRawAwait(
         }
         break
       case 'UPDATE':
-        ResultSql = await db
-          .update(sqlRow)
-          .from(sqlTable)
-          .whereRaw(sqlWhere)
-          .returning(['*'])
+        ResultSql = await db.update(sqlRow).from(sqlTable).whereRaw(sqlWhere).returning(['*'])
         break
       case 'DELETE':
-        ResultSql = await db
-          .del()
-          .from(sqlTable)
-          .whereRaw(sqlWhere)
-          .returning(['*'])
+        ResultSql = await db.del().from(sqlTable).whereRaw(sqlWhere).returning(['*'])
         break
       case 'INSERT':
         ResultSql = await db
@@ -219,5 +203,5 @@ async function f_handleRawAwait(
 //! Exports
 //!==================================================================================
 module.exports = {
-  f_handleRaw
+  serverRawHandler
 }

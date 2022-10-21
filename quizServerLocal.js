@@ -2,17 +2,15 @@
 //  Libraries
 //
 const express = require('express')
-const bcrypt = require('bcrypt')
 const cors = require('cors')
 const knex = require('knex')
 const { format } = require('date-fns')
 //
 //  Sub components
 //
-const s_Raw = require('./controllers/s_Raw')
-const s_Register = require('./controllers/s_Register')
-const s_Signin = require('./controllers/s_Signin')
-const s_Profile = require('./controllers/s_Profile')
+const serverRaw = require('./controllers/serverRaw')
+const serverRegister = require('./controllers/serverRegister')
+const serverSignin = require('./controllers/serverSignin')
 //..............................................................................
 //.  Initialisation
 //.............................................................................
@@ -33,8 +31,7 @@ const {
   LOCAL_URL_PORT,
   URL_SIGNIN,
   URL_TABLES,
-  URL_REGISTER,
-  URL_PROFILE
+  URL_REGISTER
 } = require('./quizServerConstants.js')
 //
 // Knex (LOCAL)
@@ -64,30 +61,26 @@ app.use(cors())
 //.  Routes - Tables
 //.............................................................................
 app.post(URL_TABLES, (req, res) => {
-  logRawTables(req, 'POST', 'RAW', 's_RAW')
-  s_Raw.handleRaw(req, res, db, logCounter)
+  logRawTables(req, 'POST', 'RAW', 'serverRaw')
+  serverRaw.serverRaw(req, res, db, logCounter)
 })
 
 app.delete(URL_TABLES, (req, res) => {
-  logRawTables(req, 'DELETE', 'RAW', 's_RAW')
-  s_Raw.handleRaw(req, res, db, logCounter)
+  logRawTables(req, 'DELETE', 'RAW', 'serverRaw')
+  serverRaw.serverRaw(req, res, db, logCounter)
 })
 //.............................................................................
 //.  Routes - Register/SignIn
 //.............................................................................
-app.get(`${URL_PROFILE}/:id`, (req, res) => {
-  logRawSignIn(req, 'GET Profile')
-  s_Profile.handleProfileGet(req, res, db)
-})
 
 app.post(URL_SIGNIN, (req, res) => {
   logRawSignIn(req, 'POST Signin')
-  s_Signin.handleSignin(req, res, db, bcrypt)
+  serverSignin.serverSignin(req, res, db)
 })
 
 app.post(URL_REGISTER, (req, res) => {
   logRawSignIn(req, 'POST Register')
-  s_Register.handleRegister(req, res, db, bcrypt)
+  serverRegister.serverRegister(req, res, db)
 })
 //..............................................................................
 //.  Start Server
@@ -104,16 +97,8 @@ function logRawTables(req, fetchAction, fetchRoute, handler) {
   //
   //  Destructure Parameters
   //
-  const {
-    sqlClient,
-    sqlAction,
-    sqlString,
-    sqlTable,
-    sqlWhere,
-    sqlOrderByRaw,
-    sqlRow,
-    sqlKeyName
-  } = req.body
+  const { sqlClient, sqlAction, sqlString, sqlTable, sqlWhere, sqlOrderByRaw, sqlRow, sqlKeyName } =
+    req.body
   //
   //  Timestamp and Counter
   //

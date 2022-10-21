@@ -1,4 +1,5 @@
-const handleRegister = (req, res, db, bcrypt) => {
+const bcrypt = require('bcrypt')
+const serverRegister = (req, res, db) => {
   //..............................................................................
   //.  Check the data sent
   //.............................................................................
@@ -49,5 +50,5 @@ const handleRegister = (req, res, db, bcrypt) => {
 //.  Exports
 //.............................................................................
 module.exports = {
-  handleRegister: handleRegister
+  serverRegister: serverRegister
 }

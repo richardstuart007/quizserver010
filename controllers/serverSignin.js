@@ -1,4 +1,5 @@
-const handleSignin = (req, res, db, bcrypt) => {
+const bcrypt = require('bcrypt')
+const serverSignin = (req, res, db) => {
   const { email, password } = req.body
   if (!email || !password) {
     return res.status(400).json('Email or Password empty')
@@ -26,5 +27,5 @@ const handleSignin = (req, res, db, bcrypt) => {
 }
 
 module.exports = {
-  handleSignin: handleSignin
+  serverSignin: serverSignin
 }

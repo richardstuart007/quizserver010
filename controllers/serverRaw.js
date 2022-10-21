@@ -2,7 +2,7 @@
 //= Process a RAW fetch request from server route
 //==================================================================================
 const { format } = require('date-fns')
-const s_Raw_handler = require('./s_Raw_handler')
+const serverRawHandler = require('./serverRawHandler')
 //
 // Constants
 //
@@ -24,7 +24,7 @@ var returnObject = {
 //==================================================================================
 //= Get a row from a table : table, keyName, keyValue are passed in Body
 //==================================================================================
-async function handleRaw(req, res, db, logCounter) {
+async function serverRaw(req, res, db, logCounter) {
   //
   //  Time Stamp
   //
@@ -81,9 +81,7 @@ async function handleRaw(req, res, db, logCounter) {
     //
     // Process Request Promises(ALL)
     //
-    const returnData = await Promise.all([
-      s_Raw_handler.f_handleRaw(db, bodyParms)
-    ])
+    const returnData = await Promise.all([serverRawHandler.serverRawHandler(db, bodyParms)])
     //
     // Parse Results
     //
@@ -98,9 +96,7 @@ async function handleRaw(req, res, db, logCounter) {
     const RowUpdate = returnObject.returnValue
     if (!RowUpdate) {
       if (log)
-        console.log(
-          `HANDLER. ${logCounter} Time:${TimeStamp} Module ${reference} received No Data`
-        )
+        console.log(`HANDLER. ${logCounter} Time:${TimeStamp} Module ${reference} received No Data`)
     }
     //
     //  Log return values
@@ -126,5 +122,5 @@ async function handleRaw(req, res, db, logCounter) {
 //! Exports
 //!==================================================================================
 module.exports = {
-  handleRaw
+  serverRaw
 }
