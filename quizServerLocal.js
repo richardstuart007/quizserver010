@@ -75,12 +75,12 @@ app.delete(URL_TABLES, (req, res) => {
 
 app.post(URL_SIGNIN, (req, res) => {
   logRawSignIn(req, 'POST Signin')
-  serverSignin.serverSignin(req, res, db)
+  serverSignin.serverSignin(req, res, db, logCounter)
 })
 
 app.post(URL_REGISTER, (req, res) => {
   logRawSignIn(req, 'POST Register')
-  serverRegister.serverRegister(req, res, db)
+  serverRegister.serverRegister(req, res, db, logCounter)
 })
 //..............................................................................
 //.  Start Server

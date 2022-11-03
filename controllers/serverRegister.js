@@ -1,62 +1,103 @@
-const bcrypt = require('bcrypt')
-const serverRegister = (req, res, db) => {
-  //..............................................................................
-  //.  Check the data sent
-  //.............................................................................
-  const { email, name, password, fedid, fedcountry } = req.body
-  console.log(email, name, password, fedid, fedcountry)
-
-  if (!email || !name || !password) {
-    console.log('Email or Name or Password empty')
-    return res.status(400).json('Email or Name or Password empty')
-  }
-  //..............................................................................
-  //.  Hash the password
-  //.............................................................................
-  const saltRounds = 10
-  const hash = bcrypt.hashSync(password, saltRounds)
-  //..............................................................................
-  //.  Write to User and userspwd
-  //.............................................................................
-  db.transaction(trx => {
-    trx
-      .insert({
-        uphash: hash,
-        upemail: email
-      })
-      .into('userspwd')
-      .returning('upemail')
-      .then(() => {
-        return trx('users')
-          .returning('*')
-          .insert({
-            u_name: name,
-            u_email: email,
-            u_admin: false,
-            u_fedid: fedid,
-            u_fedcountry: fedcountry,
-            u_showprogress: true,
-            u_showscore: true,
-            u_sortquestions: true,
-            u_skipcorrect: true,
-            u_dftmaxquestions: 5,
-            u_dftowner: 'NZBridge',
-            u_joined: new Date()
-          })
-          .then(user => {
-            res.json(user[0])
-          })
-      })
-      .then(trx.commit)
-      .catch(trx.rollback)
-  }).catch(err => {
-    console.log(err.detail)
-    res.status(400).json('Error registering on server')
-  })
+//==================================================================================
+//= Process a REGISTER fetch request from server route
+//==================================================================================
+const { format } = require('date-fns')
+const serverRegisterHandler = require('./serverRegisterHandler')
+//
+// Constants
+//
+const debugLog = false
+const reference = 'serverRegister'
+//
+//  Global Variable - Define return object
+//
+const CatchFunction = 'serverRegister'
+var returnObject = {
+  returnValue: '',
+  returnMessage: '',
+  returnSqlFunction: '',
+  returnCatchFunction: '',
+  returnCatch: false,
+  returnCatchMsg: '',
+  returnRows: []
 }
-//..............................................................................
-//.  Exports
-//.............................................................................
+//==================================================================================
+//= Register a User
+//==================================================================================
+async function serverRegister(req, res, db, logCounter) {
+  //
+  //  Time Stamp
+  //
+  const TimeStamp = format(new Date(), 'yyLLddHHmmss')
+  let logMessage = `Handler. ${logCounter} Time:${TimeStamp}`
+
+  try {
+    //
+    // Initialise Global Variables
+    //
+    returnObject.returnValue = false
+    returnObject.returnMessage = ''
+    returnObject.returnSqlFunction = ''
+    returnObject.returnCatchFunction = ''
+    returnObject.returnCatch = ''
+    returnObject.returnCatchMsg = ''
+    returnObject.returnRows = []
+    //..................................................................................
+    //. Check values sent in Body
+    //..................................................................................
+    const bodyParms = req.body
+    const { email, name, password } = bodyParms
+    //
+    //  Check required parameters
+    //
+    if (!email || !name || !password) {
+      returnObject.returnMessage = `Email or Name or Password empty`
+      returnObject.returnCatchFunction = CatchFunction
+      return res.status(400).json(returnObject)
+    }
+    //
+    // Process Request Promises(ALL)
+    //
+    const returnData = await Promise.all([
+      serverRegisterHandler.serverRegisterHandler(db, bodyParms)
+    ])
+    if (debugLog) console.log(`returnData `, returnData)
+    //
+    // Parse Results
+    //
+    const returnDataObject = returnData[0]
+    returnObject = Object.assign({}, returnObject, returnDataObject)
+    //
+    //  Error
+    //
+    const returnValue = returnObject.returnValue
+    if (!returnValue) {
+      if (debugLog)
+        console.log(`HANDLER. ${logCounter} Time:${TimeStamp} ${reference} received No Data`)
+      return res.status(400).send(returnObject)
+    }
+    //
+    //  Log return values
+    //
+    const records = Object.keys(returnObject.returnRows).length
+    logMessage = logMessage + `(${records})`
+    console.log(logMessage)
+    return res.status(200).json(returnObject.returnRows)
+    //
+    // Errors
+    //
+  } catch (err) {
+    logMessage = logMessage + ` Error(${err.message})`
+    console.log(logMessage)
+    returnObject.returnCatch = true
+    returnObject.returnCatchMsg = err.message
+    returnObject.returnCatchFunction = CatchFunction
+    return res.status(400).send(returnObject)
+  }
+}
+//!==================================================================================
+//! Exports
+//!==================================================================================
 module.exports = {
-  serverRegister: serverRegister
+  serverRegister
 }
